@@ -1,15 +1,7 @@
 from flask import Flask
 from extensions import db
-from models.User import User
-from models.Course import Course
-from models.Theme import Theme
-from models.Module import Module
-from models.Step import Step
-from models.Theory import Theory
-from models.Task import Task
-from models.Review import Review
-from models.User_progress import User_progress
-from models.User_Course import User_Course
+from models import User, Course, Theme, Module, Step, Theory, Task, Review, User_progress, User_Course
+from routes import auth
 
 def create_app():
     app = Flask(__name__)
