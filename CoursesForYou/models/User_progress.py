@@ -15,5 +15,5 @@ class User_progress(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     step_id = db.Column(db.Integer, db.ForeignKey('step.id'), nullable=False)
     status = db.Column(SQLEnum(statusType), nullable=False)
-    num_tries = db.Column(db.Integer, nullable=False, info = {'check': 'num_trie > 0'})
+    num_tries = db.Column(db.Integer, nullable=False, info = {'check': 'num_trie >= 0'})
     date_last = db.Column(DateTime)
