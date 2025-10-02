@@ -7,7 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
     
     DB_USER = os.environ.get('DB_USER') or 'courses_user'
-    DB_PASSWORD = os.environ.get('DB_PASSWORD') or 'your_secure_password_123'
+    DB_PASSWORD = os.environ.get('DB_PASSWORD') or 'your_password_123'
     DB_HOST = os.environ.get('DB_HOST') or 'localhost'
     DB_PORT = os.environ.get('DB_PORT') or '5432'
     DB_NAME = os.environ.get('DB_NAME') or 'coursesforyou'

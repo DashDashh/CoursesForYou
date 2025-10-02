@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime
-from CoursesForYou.extensions import db
+from extensions import db
 
 class Module(db.Model):
     id = db.Column(db.Integer, primary_key=True)
