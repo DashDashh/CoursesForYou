@@ -19,3 +19,13 @@ class Course(db.Model):
     description = db.Column(db.String(255))
     theme_id = db.Column(db.Integer, db.ForeignKey('theme.id'), nullable=False)
     level = db.Column(SQLEnum(CourseLevel), nullable=False,default=CourseLevel.BEGINNER)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'theme_id': self.theme_id,
+            'level': self.level.value if self.level else 1,
+            'id_teacher': self.id_teacher
+        }
