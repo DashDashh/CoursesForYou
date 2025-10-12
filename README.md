@@ -42,7 +42,8 @@ ADMIN - главный на сервере. Сможет блокировать 
 
 USER - обычный пользователь.
 
-# UI / API 
+# UI / API
+flask
 # Технологии разработки
 ## Язык программирования
 Backend: Python.
@@ -50,3 +51,4 @@ Frontend: HTML, CSS, Javascript.
 ## СУБД
 PostgreSQL
 # Тестирование
+Папка tests для бекенда.
