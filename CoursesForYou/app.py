@@ -6,6 +6,7 @@ from config import config
 from routes.auth import auth_bp
 from routes.courses import courses_bp
 from routes.themes import themes_bp
+from routes.modules import modules_bp
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -16,6 +17,7 @@ def create_app(config_name='default'):
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(courses_bp, url_prefix='/api')
     app.register_blueprint(themes_bp, url_prefix='/api')
+    app.register_blueprint(modules_bp, url_prefix='/api')
     
     return app
 
