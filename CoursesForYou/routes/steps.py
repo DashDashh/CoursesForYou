@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import Module, Step
+from models import Module, Step, Theory, Task
 from extensions import db
 from models.Step import stepType
 
@@ -133,6 +133,15 @@ def update_step(step_id):
 def delete_step(step_id):
     try:
         step = Step.query.get_or_404(step_id)
+        # if step.step_type == 1:
+        #     theory = Theory.get_or_404(step_id)
+        #     db.session.delete(theory)
+        #     db.session.commit()
+        # else:
+        #     task = Task.query.get_or_404(step_id)
+        #     db.session.delete(task)
+        #     db.session.commit()
+
 
         db.session.delete(step)
         db.session.commit()
