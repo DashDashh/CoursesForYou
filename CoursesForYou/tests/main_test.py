@@ -4,6 +4,7 @@ from test_courses import test_courses
 from test_themes import test_themes 
 from test_modules import test_modules
 from test_steps import test_steps
+from test_theory_tasks import test_theories_tasks
 
 if __name__ == "__main__":
     print("Starting tests...")
@@ -16,9 +17,9 @@ if __name__ == "__main__":
     
     if token:
         test_courses(token)
-        test_modules(5)
-        test_steps(1)
     else:
         test_courses(None)
-        test_modules(5)
-        test_steps(1)
+    
+    test_modules(5)
+    test_steps()
+    test_theories_tasks(3, 4)

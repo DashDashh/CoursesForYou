@@ -10,10 +10,24 @@ def get_steps(module_id):
     try:
         module = Module.query.get_or_404(module_id)
         steps = Step.query.filter_by(module_id=module_id).order_by(Step.number.asc()).all()
+        
+        steps_data = []
+        for step in steps:
+            step_data = step.to_dict()
+            
+            if step.step_type == stepType.THEORY:
+                theory = Theory.query.filter_by(step_id=step.id).first()
+                step_data['theory'] = theory.to_dict() if theory else None
+            elif step.step_type == stepType.TASK:
+                task = Task.query.filter_by(step_id=step.id).first()
+                step_data['task'] = task.to_dict() if task else None
+            
+            steps_data.append(step_data)
+        
         return jsonify({
             'module_id': module_id,
             'module_name': module.name,
-            'steps': [step.to_dict() for step in steps]
+            'steps': steps_data
         }), 200
     except Exception as e:
         return jsonify({'error': 'Failed to fetch steps for module'}), 500
@@ -62,10 +76,36 @@ def create_step(module_id):
             step_type=step_type_enum
         )
 
-        print(f"Step object created")
-        
         db.session.add(step)
-        print("Step added to session")
+        db.session.flush()
+        
+        if step_type_enum == stepType.THEORY:
+            theory_text = data.get('text') or data.get('theory', {}).get('text', '')
+            if not theory_text:
+                return jsonify({'error': 'Theory text is required'}), 400
+                
+            theory = Theory(
+                step_id=step.id,
+                text=theory_text
+            )
+            db.session.add(theory)
+            print("Theory created")
+            
+        elif step_type_enum == stepType.TASK:
+            task_data = data.get('task', {})
+            question = task_data.get('question') or data.get('question', '')
+            answer = task_data.get('answer') or data.get('answer', '')
+            
+            if not question or not answer:
+                return jsonify({'error': 'Task question and answer are required'}), 400
+                
+            task = Task(
+                step_id=step.id,
+                question=question,
+                answer=answer
+            )
+            db.session.add(task)
+            print("Task created")
         
         db.session.commit()
         print("Changes committed to database")
@@ -88,7 +128,16 @@ def create_step(module_id):
 def get_step(step_id):
     try:
         step = Step.query.get_or_404(step_id)
-        return jsonify(step.to_dict()), 200
+        step_data = step.to_dict()
+        
+        if step.step_type == stepType.THEORY:
+            theory = Theory.query.filter_by(step_id=step_id).first()
+            step_data['theory'] = theory.to_dict() if theory else None
+        elif step.step_type == stepType.TASK:
+            task = Task.query.filter_by(step_id=step_id).first()
+            step_data['task'] = task.to_dict() if task else None
+        
+        return jsonify(step_data), 200
     except Exception as e:
         return jsonify({'error': 'Failed to fetch step'}), 500
     
@@ -133,16 +182,7 @@ def update_step(step_id):
 def delete_step(step_id):
     try:
         step = Step.query.get_or_404(step_id)
-        # if step.step_type == 1:
-        #     theory = Theory.get_or_404(step_id)
-        #     db.session.delete(theory)
-        #     db.session.commit()
-        # else:
-        #     task = Task.query.get_or_404(step_id)
-        #     db.session.delete(task)
-        #     db.session.commit()
-
-
+        
         db.session.delete(step)
         db.session.commit()
 

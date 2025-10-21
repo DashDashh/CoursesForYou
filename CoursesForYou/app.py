@@ -2,30 +2,31 @@ from flask import Flask
 from extensions import db
 from config import config
 
-# Импортируем все Blueprint
 from routes.auth import auth_bp
 from routes.courses import courses_bp
 from routes.themes import themes_bp
 from routes.modules import modules_bp
 from routes.steps import steps_bp
+from routes.theory import theories_bp
+from routes.tasks import tasks_bp
 
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     db.init_app(app)
     
-    # Регистрируем все Blueprint
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(courses_bp, url_prefix='/api')
     app.register_blueprint(themes_bp, url_prefix='/api')
     app.register_blueprint(modules_bp, url_prefix='/api')
     app.register_blueprint(steps_bp, url_prefix='/api')
+    app.register_blueprint(theories_bp, url_prefix='/api')
+    app.register_blueprint(tasks_bp, url_prefix='/api')
     
     return app
 
 app = create_app('development')
 
-# Импорты моделей
 with app.app_context():
     from models.User import User
     from models.Course import Course
