@@ -10,6 +10,7 @@ from routes.steps import steps_bp
 from routes.theory import theories_bp
 from routes.tasks import tasks_bp
 from routes.user_courses import user_courses_bp
+from routes.user_progresses import user_progresses_bp
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -24,6 +25,7 @@ def create_app(config_name='default'):
     app.register_blueprint(theories_bp, url_prefix='/api')
     app.register_blueprint(tasks_bp, url_prefix='/api')
     app.register_blueprint(user_courses_bp, url_prefix='/api')
+    app.register_blueprint(user_progresses_bp, url_prefix='/api/user_progress')
     
     return app
 
