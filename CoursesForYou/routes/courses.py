@@ -129,20 +129,3 @@ def get_course(course_id):
     except Exception as e:
         return jsonify({'error': 'Failed to fetch course'}), 500
     
-@courses_bp.route('/course/<int:course_id>/reviews', methods=['GET'])
-def get_course_reviews(course_id):
-    try:
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
-
-        reviews = Review.query.filter_by(course_id=course_id).order_by(Review.date.desc())\
-        .paginate(page=page, per_page=per_page, error_out = False)
-
-        return jsonify({
-            'reviews': [review.to_dict() for review in reviews.items],
-            'total': reviews.total,
-            'pages': reviews.pages,
-            'current_page': page
-        }), 200
-    except Exception as e:
-        return jsonify({'error': 'Failed to fetch reviews'}), 500

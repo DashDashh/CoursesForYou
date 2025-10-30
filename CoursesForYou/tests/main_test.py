@@ -7,6 +7,7 @@ from test_steps import test_steps
 from test_theory_tasks import test_theories_tasks
 from test_user_courses import test_user_courses
 from test_user_progresses import test_user_progresses
+from test_reviews import test_reviews
 
 if __name__ == "__main__":
     print("Starting tests...")
@@ -27,4 +28,6 @@ if __name__ == "__main__":
     #test_theories_tasks(3, 4)
     #test_user_courses(16, 5)
 
-    test_user_progresses(16, 1, 5, 1)
+    #test_user_progresses(16, 1, 5, 1)
+
+    test_reviews(5, 15)

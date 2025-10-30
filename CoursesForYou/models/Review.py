@@ -9,3 +9,12 @@ class Review(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     text = db.Column(db.Text, nullable=False)
     date = db.Column(DateTime)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'course_id': self.course_id,
+            'text': self.text,
+            'date': self.date.isoformat() if self.date else None
+        }
