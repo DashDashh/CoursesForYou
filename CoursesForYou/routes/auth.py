@@ -1,13 +1,16 @@
 from flask import Blueprint, request, jsonify, session
+from flask_cors import cross_origin
 from models import User
 from extensions import db
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def register():
     try:
         data = request.get_json()
+        print("Получены данные регистрации:", data)
 
         if not data.get('login') or not data.get('password'):
             return jsonify({'error': 'Login and password are required.'}), 400

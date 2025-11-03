@@ -1,6 +1,7 @@
 from flask import Flask
 from extensions import db
 from config import config
+from flask_cors import CORS
 
 from routes.auth import auth_bp
 from routes.courses import courses_bp
@@ -17,6 +18,12 @@ def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     db.init_app(app)
+
+    CORS(app, 
+         origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+         supports_credentials=True,
+         methods=["GET", "POST", "PUT", "DELETE"],
+         allow_headers=["Content-Type"])
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(courses_bp, url_prefix='/api')
