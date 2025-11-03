@@ -12,9 +12,22 @@ function showMessage(message, isError = false) {
   messageDiv.style.color = isError ? "red" : "green";
 }
 
+function validatePassword(password) {
+  const errors = [];
+
+  if (password.length < 8) errors.push("не менее 8 символов");
+  if (!/(?=.*[a-z])/.test(password)) errors.push("строчные буквы");
+  if (!/(?=.*[A-Z])/.test(password)) errors.push("заглавные буквы");
+  if (!/(?=.*\d)/.test(password)) errors.push("цифры");
+  if (!/(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(password))
+    errors.push("специальные символы");
+
+  return errors;
+}
+
 async function register(login, password) {
   try {
-    const response = await fetch("${API_BASE_URL}/register", {
+    const response = await fetch(`${API_BASE_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,16 +41,7 @@ async function register(login, password) {
     const data = await response.json();
 
     if (response.ok) {
-      showMessage("Регистрация успешна!", false);
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: data.user_id,
-          login: data.login,
-        })
-      );
-
+      showMessage("Регистрация успешна! Перенаправляем...", false);
       setTimeout(() => {
         window.location.href = "login.html";
       }, 2000);
@@ -45,18 +49,13 @@ async function register(login, password) {
       showMessage(data.error || "Ошибка регистрации", true);
     }
   } catch (error) {
-    console.error("Error:", error);
     showMessage("Ошибка соединения с сервером", true);
   }
 }
 
 function initRegisterForm() {
   const form = document.getElementById("registerForm");
-
-  if (!form) {
-    console.error("Форма регистрации не найдена");
-    return;
-  }
+  if (!form) return;
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -70,13 +69,17 @@ function initRegisterForm() {
       return;
     }
 
-    if (password.length < 6) {
-      showMessage("Пароль должен быть не менее 6 символов", true);
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors.length > 0) {
+      showMessage(
+        "Пароль должен содержать: " + passwordErrors.join(", "),
+        true
+      );
       return;
     }
 
-    if (password != confirmPassword) {
-      showMessage("Пароли не совпали", true);
+    if (password !== confirmPassword) {
+      showMessage("Пароли не совпадают", true);
       return;
     }
 
@@ -84,6 +87,4 @@ function initRegisterForm() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  initRegisterForm();
-});
+document.addEventListener("DOMContentLoaded", initRegisterForm);
