@@ -44,9 +44,12 @@ def register():
     
 
 @auth_bp.route('/login', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def login():
     try:
         data = request.get_json()
+        print("Получены данные входа:", data)
+        
         if not data.get('login') or not data.get('password'):
             return jsonify({'error': 'Login and password are required.'}), 400
         
@@ -58,6 +61,8 @@ def login():
         session['user_id'] = user.id
         session['user_login'] = user.login
         session['user_role'] = user.role.value
+
+        print(f"Пользователь {user.login} вошел в систему")
 
         return jsonify({
             'message': 'Login successful',
@@ -72,10 +77,12 @@ def login():
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
     except Exception as e:
+        print(f"Ошибка входа: {e}")
         return jsonify({'error': 'Login failed.'}), 500
     
 
 @auth_bp.route('/logout', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def logout():
     try:
         session.clear()
@@ -84,6 +91,7 @@ def logout():
         return jsonify({'error': 'Logout failed.'}), 500
 
 @auth_bp.route('/check_auth', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def check_auth():
     try:
         if 'user_id' in session:
@@ -99,10 +107,11 @@ def check_auth():
         else:
             return jsonify({'authenticated': False}), 200
     except Exception as e:
-        return jsonify({'error', 'Authentification check failed.'})
+        return jsonify({'error': 'Authentification check failed.'}), 500
     
 
 @auth_bp.route('/change_password', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def change_password():
     try:
         if 'user_id' not in session:
@@ -119,12 +128,13 @@ def change_password():
 
         return jsonify({'message': 'Password changed successfully'}), 200
     except ValueError as e:
-        return jsonify({'error', str(e)}), 400
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Change password is failed'}), 500
     
 @auth_bp.route('/update_profile', methods=['PUT'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_profile():
     try:
         if 'user_id' not in session:
@@ -136,8 +146,7 @@ def update_profile():
         if 'about' in data:
             user.about = data['about']
         if 'avatar_path' in data:
-            user.avatar_path = data['avatar_patn']
-        
+            user.avatar_path = data['avatar_path']
         db.session.commit()
 
         return jsonify({'message': 'Profile updated successfully'}), 200
