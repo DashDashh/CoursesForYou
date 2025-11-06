@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля - Courses for you</title>
+</head>
+<body>
+    <h1>Редактирование профиля</h1>
+    
+    <div>
+        <h2>Информация о себе</h2>
+        <form id="profileForm">
+            <div>
+                <label>О себе:</label>
+                <textarea id="about" name="about" rows="4" cols="50" placeholder="Расскажите о себе..."></textarea>
+            </div>
+            <button type="submit">Сохранить информацию</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Смена пароля</h2>
+        <form id="passwordForm">
+            <div>
+                <label>Текущий пароль:</label>
+                <input type="password" id="currentPassword" name="currentPassword" required>
+            </div>
+            <div>
+                <label>Новый пароль:</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            <div>
+                <label>Подтвердите новый пароль:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            <button type="submit">Сменить пароль</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Аватар</h2>
+        <form id="avatarForm">
+            <div>
+                <label>Ссылка на аватар:</label>
+                <input type="text" id="avatarPath" name="avatarPath" placeholder="https://example.com/avatar.jpg">
+            </div>
+            <button type="submit">Обновить аватар</button>
+        </form>
+    </div>
+
+    <div>
+        <a href="profile.html">
+            <button>Назад в профиль</button>
+        </a>
+    </div>
+
+    <script src="js/edit-profile.js"></script>
+</body>
+</html>

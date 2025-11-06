@@ -14,11 +14,11 @@ class CourseLevel(Enum):
 
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     id_teacher = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     description = db.Column(db.String(255))
     theme_id = db.Column(db.Integer, db.ForeignKey('theme.id'), nullable=False)
-    level = db.Column(SQLEnum(CourseLevel), nullable=False,default=CourseLevel.BEGINNER)
+    level = db.Column(SQLEnum(CourseLevel), nullable=False, default=CourseLevel.BEGINNER)
 
     def to_dict(self):
         return {

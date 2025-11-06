@@ -5,6 +5,17 @@ from extensions import db
 
 auth_bp = Blueprint('auth', __name__)
 
+def get_user_from_auth():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return None
+    
+    user_id = auth_header.replace('Bearer ', '').strip()
+    try:
+        return User.query.get(int(user_id))
+    except:
+        return None
+
 @auth_bp.route('/register', methods=['POST'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def register():
@@ -71,7 +82,8 @@ def login():
                 'login': user.login,
                 'role': user.role.value,
                 'login_display': user.login_display
-            }
+            },
+            'token': str(user.id)
         }), 200
     except ValueError as e:
         db.session.rollback()
@@ -94,8 +106,11 @@ def logout():
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def check_auth():
     try:
-        if 'user_id' in session:
+        user = get_user_from_auth()
+        if not user and 'user_id' in session:
             user = User.query.get(session['user_id'])
+        
+        if user:
             return jsonify({
                 'authenticated': True,
                 'user': {
@@ -114,11 +129,11 @@ def check_auth():
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def change_password():
     try:
-        if 'user_id' not in session:
+        user = get_user_from_auth()
+        if not user:
             return jsonify({'error': 'Not authenticated'}), 401
         
         data = request.get_json()
-        user = User.query.get(session['user_id'])
 
         if not user.check_password(data['current_password']):
             return jsonify({'error': 'Current password is incorrect'}), 401
@@ -137,18 +152,37 @@ def change_password():
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_profile():
     try:
-        if 'user_id' not in session:
+        user = get_user_from_auth()
+        if not user:
             return jsonify({'error': 'Not authenticated'}), 401
         
         data = request.get_json()
-        user = User.query.get(session['user_id'])
 
         if 'about' in data:
             user.about = data['about']
         if 'avatar_path' in data:
             user.avatar_path = data['avatar_path']
+        
         db.session.commit()
 
         return jsonify({'message': 'Profile updated successfully'}), 200
     except Exception as e:
         return jsonify({'error': 'Profile update failed'}), 500
+    
+
+@auth_bp.route('/user_profile', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+def get_user_profile():
+    try:
+        user = get_user_from_auth()
+        if not user:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        return jsonify({
+            'login': user.login,
+            'about': user.about,
+            'avatar_path': user.avatar_path,
+            'register_date': user.register_date.isoformat() if user.register_date else None
+        }), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to get profile'}), 500

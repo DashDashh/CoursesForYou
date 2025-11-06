@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог курсов - Courses for you</title>
+</head>
+<body>
+    <h1>Каталог курсов</h1>
+    
+    <div>
+        <a href="learning.html">
+            <button>Назад к обучению</button>
+        </a>
+        <a href="profile.html">
+            <button>В профиль</button>
+        </a>
+    </div>
+
+    <div>
+        <h2>Поиск курсов</h2>
+        <input type="text" id="searchInput" placeholder="Поиск по названию курса...">
+        <button onclick="searchCourses()">Найти</button>
+    </div>
+
+    <div id="allCourses">
+        <p>Загрузка каталога курсов...</p>
+    </div>
+
+    <script src="js/catalog.js"></script>
+</body>
+</html>
