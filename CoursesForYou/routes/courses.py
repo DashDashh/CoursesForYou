@@ -189,3 +189,36 @@ def get_course(course_id):
         return jsonify(course_data), 200
     except Exception as e:
         return jsonify({'error': 'Failed to fetch course'}), 500
+    
+
+@courses_bp.route('/course/<int:course_id>', methods=['PUT'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+def update_course(course_id):
+    try:
+        data = request.get_json()
+        print(f"Обновление курса {course_id}: {data}")
+        
+        course = Course.query.get_or_404(course_id)
+        
+        # Обновляем поля
+        if 'name' in data:
+            course.name = data['name']
+        if 'description' in data:
+            course.description = data['description']
+        if 'theme_id' in data:
+            course.theme_id = data['theme_id']
+        if 'level' in data:
+            level_enum = CourseLevel(data['level'])
+            course.level = level_enum
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Course updated successfully',
+            'course': course.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка обновления курса: {e}")
+        return jsonify({'error': f'Course update failed: {str(e)}'}), 500

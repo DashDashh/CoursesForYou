@@ -31,9 +31,13 @@ async function loadAllCourses() {
                 <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
                     <h3>${course.title || course.name}</h3>
                     <p>${course.description || "Описание отсутствует"}</p>
-                    <p><strong>Автор:</strong> ${
-                      course.author || "Неизвестно"
-                    }</p>
+                    <p><strong>Автор:</strong> 
+                      <a href="view-profile.html?id=${
+                        course.id_teacher
+                      }" style="color: #007bff; text-decoration: none;">
+                        ${course.author || "Неизвестно"}
+                      </a>
+                    </p>
                     <p><strong>Рейтинг:</strong> ${
                       course.rating || "нет оценок"
                     }</p>
@@ -90,9 +94,13 @@ async function searchCourses() {
                 <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
                     <h3>${course.title || course.name}</h3>
                     <p>${course.description || "Описание отсутствует"}</p>
-                    <p><strong>Автор:</strong> ${
-                      course.author || "Неизвестно"
-                    }</p>
+                    <p><strong>Автор:</strong> 
+                      <a href="teacher-profile.html?id=${
+                        course.id_teacher
+                      }" style="color: #007bff; text-decoration: none;">
+                        ${course.author || "Неизвестно"}
+                      </a>
+                    </p>
                     <p><strong>Рейтинг:</strong> ${
                       course.rating || "нет оценок"
                     }</p>

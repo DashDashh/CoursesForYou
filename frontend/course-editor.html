@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор курса - Courses for you</title>
+</head>
+<body>
+    <h1 id="pageTitle">Создание курса</h1>
+    
+    <div>
+        <a href="teaching.html" id="backButton">
+            <button>Назад к преподаванию</button>
+        </a>
+    </div>
+
+    <form id="courseEditorForm">
+        <div>
+            <label>Название курса (макс. 20 символов):</label>
+            <input type="text" id="courseName" name="courseName" required maxlength="20">
+            <span id="nameCounter">0/20</span>
+        </div>
+        
+        <div>
+            <label>Описание курса (макс. 255 символов):</label>
+            <textarea id="courseDescription" name="courseDescription" rows="4" maxlength="255"></textarea>
+            <span id="descriptionCounter">0/255</span>
+        </div>
+        
+        <div>
+            <label>Тема курса:</label>
+            <select id="courseTheme" name="courseTheme" required>
+                <option value="">Выберите тему</option>
+            </select>
+        </div>
+        
+        <div>
+            <label>Уровень сложности:</label>
+            <select id="courseLevel" name="courseLevel" required>
+                <option value="1">Начинающий</option>
+                <option value="2">Элементарный</option>
+                <option value="3">Средний</option>
+                <option value="4">Продвинутый</option>
+                <option value="5">Эксперт</option>
+            </select>
+        </div>
+        
+        <div>
+            <button type="submit" id="submitButton">Создать курс</button>
+            <button type="button" id="cancelButton" style="margin-left: 10px;">Отмена</button>
+        </div>
+    </form>
+
+    <script src="js/course-editor.js"></script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from models import Theme
 from extensions import db
 
 themes_bp = Blueprint('themes', __name__)
 
 @themes_bp.route('/themes', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def create_theme():
     try:
         data = request.get_json()
@@ -31,6 +33,7 @@ def create_theme():
     
 
 @themes_bp.route('/themes', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True, allow_headers=['Authorization', 'Content-Type'])  # Добавьте этот декоратор
 def get_themes():
     try:
         name = request.args.get('name', type=str)
@@ -46,6 +49,7 @@ def get_themes():
         return jsonify({'error': 'Failed to fetch themes'}), 500
     
 @themes_bp.route('/theme/<int:theme_id>', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_theme(theme_id):
     try:
         theme = Theme.query.get_or_404(theme_id)
