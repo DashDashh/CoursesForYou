@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курс - Courses for you</title>
+</head>
+<body>
+    <div class="navigation">
+        <a href="my-courses.html">
+            <button>Назад к моим курсам</button>
+        </a>
+    </div>
+
+    <div class="header">
+        <div class="course-info">
+            <h1 class="course-title" id="courseTitle">Загрузка...</h1>
+            <div class="course-meta">
+                <span id="courseInstructor"></span> • 
+                <span id="courseLevel"></span> • 
+                <span id="courseTheme"></span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="courseProgress"></div>
+            </div>
+            <div class="course-description" id="courseDescription"></div>
+        </div>
+    </div>
+
+    <div class="modules-section">
+        <h2>Модули курса</h2>
+        <div class="module-list" id="moduleList">
+            <p>Загрузка модулей...</p>
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h2>Отзывы и комментарии</h2>
+        <div class="comments-list" id="commentsList">
+            <p>Загрузка комментариев...</p>
+        </div>
+        
+        <div class="add-comment">
+            <h3>Оставить отзыв</h3>
+            <div class="comment-form">
+                <textarea id="commentText" placeholder="Поделитесь своими впечатлениями о курсе..."></textarea>
+                <button onclick="submitComment()">Отправить отзыв</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/course.js"></script>
+</body>
+</html>
