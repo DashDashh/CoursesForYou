@@ -1,10 +1,21 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import cross_origin
 from models import Course, Module
 from extensions import db
 
 modules_bp = Blueprint('modules', __name__)
 
+@modules_bp.route('/courses/<int:course_id>/modules', methods=['OPTIONS'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['GET', 'POST', 'OPTIONS'])
+def handle_modules_options(course_id):
+    return jsonify({}), 200
+
 @modules_bp.route('/courses/<int:course_id>/modules', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['GET'])
 def get_modules(course_id):
     try:
         course = Course.query.get_or_404(course_id)
@@ -15,9 +26,13 @@ def get_modules(course_id):
             'modules': [module.to_dict() for module in modules]
         }), 200
     except Exception as e:
-        return jsonify({'error' : 'Failed to fetch modules for course'}), 500
-    
+        print(f"Error in get_modules: {str(e)}")
+        return jsonify({'error': 'Failed to fetch modules for course'}), 500
+
 @modules_bp.route('/courses/<int:course_id>/modules', methods=['POST'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['POST'])
 def create_module(course_id):
     try:
         data = request.get_json()
@@ -74,16 +89,29 @@ def create_module(course_id):
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
         return jsonify({'error': 'Failed to create module'}), 500
-    
+
+@modules_bp.route('/modules/<int:module_id>', methods=['OPTIONS'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['GET', 'PUT', 'DELETE', 'OPTIONS'])
+def handle_module_options(module_id):
+    return jsonify({}), 200
+
 @modules_bp.route('/modules/<int:module_id>', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['GET'])
 def get_module(module_id):
     try:
         module = Module.query.get_or_404(module_id)
         return jsonify(module.to_dict()), 200
     except Exception as e:
         return jsonify({'error': 'Failed to fetch module'}), 500
-    
+
 @modules_bp.route('/modules/<int:module_id>', methods=['PUT'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['PUT'])
 def update_module(module_id):
     try:
         module = Module.query.get_or_404(module_id)
@@ -111,8 +139,11 @@ def update_module(module_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Failed to update module'}), 500
-        
+
 @modules_bp.route('/modules/<int:module_id>', methods=['DELETE'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+              supports_credentials=True,
+              methods=['DELETE'])
 def delete_module(module_id):
     try:
         module = Module.query.get_or_404(module_id)

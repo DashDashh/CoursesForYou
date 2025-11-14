@@ -36,6 +36,10 @@ async function loadCourseData(courseId) {
       document.getElementById("courseTheme").value = courseData.theme_id || "";
       document.getElementById("courseLevel").value = courseData.level || "1";
 
+      // Показываем секцию модулей и загружаем их
+      document.getElementById("modulesSection").style.display = "block";
+      await loadModules(courseId);
+
       updateCounters();
     } else {
       console.error("Ошибка загрузки данных курса");
@@ -45,6 +49,135 @@ async function loadCourseData(courseId) {
     console.error("Ошибка загрузки курса:", error);
     alert("Ошибка соединения с сервером");
   }
+}
+
+// Загрузка модулей курса
+async function loadModules(courseId) {
+  try {
+    console.log("Загружаем модули для курса:", courseId);
+
+    const response = await fetch(
+      `${API_BASE_URL}/courses/${courseId}/modules`,
+      {
+        method: "GET",
+        headers: getAuthHeaders(),
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Получены данные модулей:", data);
+      displayModules(data);
+    } else {
+      console.error("Ошибка загрузки модулей");
+      document.getElementById("modulesList").innerHTML =
+        "<p>Ошибка загрузки модулей</p>";
+    }
+  } catch (error) {
+    console.error("Ошибка загрузки модулей:", error);
+    document.getElementById("modulesList").innerHTML =
+      "<p>Ошибка соединения</p>";
+  }
+}
+
+function displayModules(data) {
+  const modulesList = document.getElementById("modulesList");
+
+  let modules = [];
+
+  if (data.modules && Array.isArray(data.modules)) {
+    modules = data.modules;
+  } else if (Array.isArray(data)) {
+    modules = data;
+  } else if (data.course_modules && Array.isArray(data.course_modules)) {
+    modules = data.course_modules;
+  }
+
+  console.log("Обработанные модули для отображения:", modules);
+
+  if (!modules || modules.length === 0) {
+    modulesList.innerHTML = "<p>Модули еще не добавлены</p>";
+    return;
+  }
+
+  modulesList.innerHTML = modules
+    .map(
+      (module) => `
+    <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+      <div>
+        <strong>Модуль ${module.number}: ${module.name}</strong>
+      </div>
+      <div>ID: ${module.id}</div>
+      <div>
+        <button onclick="openModuleEditor(${module.id})">Редактировать</button>
+        <button onclick="deleteModule(${module.id})">Удалить</button>
+      </div>
+    </div>
+  `
+    )
+    .join("");
+}
+
+async function addModule(courseId, moduleData) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/courses/${courseId}/modules`,
+      {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(moduleData),
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log("Модуль создан:", result);
+      await loadModules(courseId);
+
+      document.getElementById("addModuleForm").reset();
+      alert("Модуль успешно добавлен!");
+
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка создания модуля");
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteModule(moduleId) {
+  if (
+    !confirm(
+      "Вы уверены, что хотите удалить этот модуль? Все шаги внутри модуля также будут удалены."
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/modules/${moduleId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    if (response.ok) {
+      console.log("Модуль удален");
+      await loadModules(getCourseIdFromURL());
+      alert("Модуль успешно удален!");
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Ошибка удаления модуля");
+    }
+  } catch (error) {
+    console.error("Ошибка удаления модуля:", error);
+    alert(error.message);
+  }
+}
+
+function openModuleEditor(moduleId) {
+  window.location.href = `module-editor.html?course_id=${getCourseIdFromURL()}&module_id=${moduleId}`;
 }
 
 async function loadThemes() {
@@ -64,7 +197,6 @@ async function loadThemes() {
       const data = await response.json();
       console.log("Получены темы:", data);
 
-      // Очищаем select
       themeSelect.innerHTML = '<option value="">Выберите тему</option>';
 
       let themes = [];
@@ -125,7 +257,8 @@ async function createCourse(courseData) {
       const result = await response.json();
       console.log("Курс создан:", result);
       alert("Курс успешно создан!");
-      window.location.href = "my-teaching-courses.html";
+
+      window.location.href = `course-editor.html?id=${result.id}`;
       return result;
     } else {
       const errorData = await response.json();
@@ -167,7 +300,6 @@ async function updateCourse(courseId, courseData) {
       const result = await response.json();
       console.log("Курс обновлен:", result);
       alert("Курс успешно обновлен!");
-      window.location.href = "my-teaching-courses.html";
       return result;
     } else {
       try {
@@ -277,6 +409,38 @@ function initForm() {
       submitBtn.disabled = false;
     }
   });
+
+  document
+    .getElementById("addModuleForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      if (!isEditMode()) {
+        alert("Сначала сохраните курс, чтобы добавлять модули");
+        return;
+      }
+
+      const moduleName = document.getElementById("moduleName").value.trim();
+      const moduleNumber = document.getElementById("moduleNumber").value;
+
+      if (!moduleName) {
+        alert("Введите название модуля");
+        return;
+      }
+
+      const moduleData = {
+        name: moduleName,
+        number: parseInt(moduleNumber),
+        course_id: parseInt(getCourseIdFromURL()),
+      };
+
+      try {
+        await addModule(getCourseIdFromURL(), moduleData);
+      } catch (error) {
+        console.error("Ошибка добавления модуля:", error);
+        alert(error.message);
+      }
+    });
 
   document
     .getElementById("cancelButton")

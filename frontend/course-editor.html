@@ -51,6 +51,28 @@
         </div>
     </form>
 
+    <div id="modulesSection" style="display: none;">
+        <h2>Модули курса</h2>
+        
+        <div id="modulesList">
+        </div>
+        
+        <div>
+            <h3>Добавить новый модуль</h3>
+            <form id="addModuleForm">
+                <div>
+                    <label>Название модуля:</label>
+                    <input type="text" id="moduleName" name="moduleName" required maxlength="100">
+                </div>
+                <div>
+                    <label>Номер модуля:</label>
+                    <input type="number" id="moduleNumber" name="moduleNumber" min="1" required>
+                </div>
+                <button type="submit">Добавить модуль</button>
+            </form>
+        </div>
+    </div>
+
     <script src="js/course-editor.js"></script>
 </body>
 </html>
