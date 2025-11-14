@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор модуля - Courses for you</title>
+</head>
+<body>
+    <h1 id="pageTitle">Редактор модуля</h1>
+    
+    <div>
+        <button id="backButton">Назад к курсу</button>
+    </div>
+
+    <div id="moduleInfo">
+        <h2 id="moduleNameTitle">Загрузка...</h2>
+    </div>
+
+    <div id="stepsSection">
+        <h2>Шаги модуля</h2>
+        
+        <div id="stepsList">
+        </div>
+        
+        <div>
+            <h3>Добавить новый шаг</h3>
+            <form id="addStepForm">
+                <div>
+                    <label>Тип шага:</label>
+                    <select id="stepType" name="stepType" required>
+                        <option value="">Выберите тип шага</option>
+                        <option value="theory">Теория</option>
+                        <option value="task">Задание</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Номер шага:</label>
+                    <input type="number" id="stepNumber" name="stepNumber" min="1" required>
+                </div>
+
+                <!-- Поля для теории -->
+                <div id="theoryFields" style="display: none;">
+                    <div>
+                        <label>Текст теории:</label>
+                        <textarea id="theoryText" name="theoryText" rows="6" placeholder="Введите теоретический материал..."></textarea>
+                    </div>
+                </div>
+
+                <div id="taskFields" style="display: none;">
+                    <div>
+                        <label>Вопрос задания:</label>
+                        <textarea id="taskQuestion" name="taskQuestion" rows="4" placeholder="Введите вопрос задания..."></textarea>
+                    </div>
+                    <div>
+                        <label>Правильный ответ:</label>
+                        <input type="text" id="correctAnswer" name="correctAnswer" placeholder="Введите правильный ответ...">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitStepButton">Создать шаг</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editStepModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+        <div style="background: white; margin: 50px auto; padding: 20px; width: 80%; max-width: 600px;">
+            <h3>Редактирование шага</h3>
+            <form id="editStepForm">
+                <input type="hidden" id="editStepId">
+                <div>
+                    <label>Номер шага:</label>
+                    <input type="number" id="editStepNumber" min="1" required>
+                </div>
+                
+                <div id="editTheoryFields" style="display: none;">
+                    <div>
+                        <label>Текст теории:</label>
+                        <textarea id="editTheoryText" rows="6" placeholder="Введите теоретический материал..."></textarea>
+                    </div>
+                </div>
+
+                <div id="editTaskFields" style="display: none;">
+                    <div>
+                        <label>Вопрос задания:</label>
+                        <textarea id="editTaskQuestion" rows="4" placeholder="Введите вопрос задания..."></textarea>
+                    </div>
+                    <div>
+                        <label>Правильный ответ:</label>
+                        <input type="text" id="editCorrectAnswer" placeholder="Введите правильный ответ...">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit">Сохранить изменения</button>
+                    <button type="button" id="cancelEditButton">Отмена</button>
+                    <button type="button" id="deleteStepButton" style="margin-left: 10px;">Удалить шаг</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/module-editor.js"></script>
+</body>
+</html>
