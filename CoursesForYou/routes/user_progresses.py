@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
 from models import User, Course, Module, Step, User_progress
 from models.User_progress import statusType
+from flask_cors import cross_origin
 from extensions import db
 from datetime import datetime, timezone
 
 user_progresses_bp = Blueprint('user_progress', __name__)
 
 @user_progresses_bp.route('/user/<int:user_id>/step/<int:step_id>', methods=['POST', 'PUT'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_step_progress(user_id, step_id):
     try:
         user = User.query.get_or_404(user_id)
@@ -53,6 +55,7 @@ def update_step_progress(user_id, step_id):
         return jsonify({'error': str(e)}), 500
     
 @user_progresses_bp.route('/user/<int:user_id>/course/<int:course_id>', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_course_progress(user_id, course_id):
     try:
         modules = Module.query.filter_by(course_id=course_id).all()
@@ -92,6 +95,7 @@ def get_course_progress(user_id, course_id):
         return jsonify({'error': str(e)}), 500
     
 @user_progresses_bp.route('/user/<int:user_id>/module/<int:module_id>', methods=['GET'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_module_progress(user_id, module_id):
     try:
         print(f"DEBUG: Starting get_module_progress for user {user_id}, module {module_id}")

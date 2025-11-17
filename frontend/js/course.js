@@ -26,53 +26,59 @@ function checkAuth() {
   return true;
 }
 
-async function submitComment() {
-  if (!checkAuth()) {
-    return;
-  }
-
-  const commentText = document.getElementById("commentText").value.trim();
-
-  if (!commentText) {
-    alert("Пожалуйста, введите текст отзыва");
-    return;
-  }
-
+// Загрузка прогресса курса
+async function loadCourseProgress() {
   try {
-    const currentUser = getCurrentUser();
-    console.log("Current user:", currentUser);
-
-    if (!currentUser || !currentUser.id) {
-      alert("Ошибка: пользователь не найден. Пожалуйста, войдите заново.");
-      localStorage.removeItem("user");
-      window.location.href = "login.html";
+    const user = getCurrentUser();
+    if (!user) {
+      // Если пользователь не авторизован, скрываем или показываем базовую информацию
+      document.getElementById("courseProgress").style.display = "none";
       return;
     }
 
-    const response = await fetch(`${API_BASE_URL}/reviews`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: currentUser.id,
-        course_id: parseInt(courseId),
-        text: commentText,
-      }),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/user_progress/user/${user.id}/course/${courseId}`
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    if (response.ok) {
-      const result = await response.json();
-      document.getElementById("commentText").value = "";
-      loadComments();
-      alert("Отзыв успешно добавлен!");
+    const progress = await response.json();
+    console.log("Course progress:", progress);
+
+    // Обновляем прогресс-бар
+    const progressElement = document.getElementById("courseProgress");
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+
+    if (progressFill) {
+      progressFill.style.width = `${progress.progress_percentage || 0}%`;
+    }
+
+    if (progressText) {
+      progressText.textContent = `Прогресс: ${progress.completed_steps || 0}/${
+        progress.total_steps || 0
+      } шагов (${progress.progress_percentage || 0}%)`;
     } else {
-      const errorData = await response.json();
-      alert(`Ошибка при отправке отзыва: ${errorData.error}`);
+      // Создаем элемент для отображения прогресса, если его нет
+      const progressInfo = document.createElement("div");
+      progressInfo.id = "progressText";
+      progressInfo.className = "progress-info";
+      progressInfo.textContent = `Прогресс: ${progress.completed_steps || 0}/${
+        progress.total_steps || 0
+      } шагов (${progress.progress_percentage || 0}%)`;
+
+      const progressContainer =
+        document.getElementById("courseProgress") ||
+        document.querySelector(".course-info");
+      if (progressContainer) {
+        progressContainer.appendChild(progressInfo);
+      }
     }
   } catch (error) {
-    console.error("Ошибка отправки комментария:", error);
-    alert("Ошибка при отправке отзыва");
+    console.error("Ошибка загрузки прогресса курса:", error);
+    // Скрываем прогресс при ошибке
+    document.getElementById("courseProgress").style.display = "none";
   }
 }
 
@@ -99,6 +105,9 @@ async function loadCourseData() {
     }`;
     document.getElementById("courseDescription").textContent =
       course.description || "Описание отсутствует";
+
+    // Загружаем прогресс после загрузки основных данных
+    await loadCourseProgress();
   } catch (error) {
     console.error("Ошибка загрузки данных курса:", error);
     document.getElementById("courseTitle").textContent =
@@ -125,23 +134,75 @@ async function loadModules() {
       return;
     }
 
+    // Загружаем прогресс для каждого модуля
+    const user = getCurrentUser();
+    let moduleProgressData = [];
+
+    if (user) {
+      try {
+        // Получаем прогресс по всем модулям курса
+        for (const module of modules) {
+          const progressResponse = await fetch(
+            `${API_BASE_URL}/user_progress/user/${user.id}/module/${module.id}`
+          );
+          if (progressResponse.ok) {
+            const moduleProgress = await progressResponse.json();
+            moduleProgressData[module.id] = moduleProgress;
+          }
+        }
+      } catch (error) {
+        console.error("Ошибка загрузки прогресса модулей:", error);
+      }
+    }
+
     modules.forEach((module) => {
       const moduleElement = document.createElement("div");
       moduleElement.className = "module-item";
       moduleElement.onclick = () => openModule(module.id);
 
-      const statusText = getStatusText(module.status);
+      // Получаем прогресс модуля
+      const moduleProgress = moduleProgressData[module.id];
+      const completedSteps = moduleProgress?.completed_steps || 0;
+      const totalSteps = moduleProgress?.total_steps || 0;
+
+      let statusText = "Не начато";
+      let statusClass = "status-not-started";
+
+      if (totalSteps > 0) {
+        if (completedSteps === totalSteps) {
+          statusText = `Завершено (${completedSteps}/${totalSteps})`;
+          statusClass = "status-completed";
+        } else if (completedSteps > 0) {
+          statusText = `В процессе (${completedSteps}/${totalSteps})`;
+          statusClass = "status-in-progress";
+        } else {
+          statusText = `Не начато (0/${totalSteps})`;
+        }
+      }
 
       moduleElement.innerHTML = `
-                <div class="module-header">
-                    <div class="module-title">
-                        Модуль ${module.number || module.order_number}: ${
+        <div class="module-header">
+          <div class="module-title">
+            Модуль ${module.number || module.order_number}: ${
         module.name || module.title
       }
-                    </div>
-                    <div class="module-status">${statusText}</div>
-                </div>
-            `;
+          </div>
+          <div class="module-status ${statusClass}">${statusText}</div>
+        </div>
+        ${
+          totalSteps > 0
+            ? `
+        <div class="module-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${
+              (completedSteps / totalSteps) * 100
+            }%"></div>
+          </div>
+        </div>
+        `
+            : ""
+        }
+      `;
 
       moduleList.appendChild(moduleElement);
     });
@@ -191,56 +252,6 @@ async function loadComments() {
     console.error("Ошибка загрузки комментариев:", error);
     document.getElementById("commentsList").innerHTML =
       "<p>Ошибка загрузки отзывов</p>";
-  }
-}
-
-async function submitComment() {
-  if (!checkAuth()) {
-    return;
-  }
-
-  const commentText = document.getElementById("commentText").value.trim();
-
-  if (!commentText) {
-    alert("Пожалуйста, введите текст отзыва");
-    return;
-  }
-
-  try {
-    const currentUser = getCurrentUser();
-    console.log("Current user:", currentUser);
-
-    if (!currentUser || !currentUser.id) {
-      alert("Ошибка: пользователь не найден. Пожалуйста, войдите заново.");
-      localStorage.removeItem("user");
-      window.location.href = "login.html";
-      return;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/reviews`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        user_id: currentUser.id,
-        course_id: parseInt(courseId),
-        text: commentText,
-      }),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      document.getElementById("commentText").value = "";
-      loadComments();
-      alert("Отзыв успешно добавлен!");
-    } else {
-      const errorData = await response.json();
-      alert(`Ошибка при отправке отзыва: ${errorData.error}`);
-    }
-  } catch (error) {
-    console.error("Ошибка отправки комментария:", error);
-    alert("Ошибка при отправке отзыва");
   }
 }
 

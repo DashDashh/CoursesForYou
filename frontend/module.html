@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модуль - Courses for you</title>
+</head>
+<body>
+    <div class="navigation">
+        <a href="course.html?id=" id="backToCourse">
+            <button>Назад к курсу</button>
+        </a>
+    </div>
+
+    <div class="module-header">
+        <h1 id="moduleTitle">Загрузка модуля...</h1>
+        <div class="module-info">
+            Курс: <span id="courseName"></span>
+        </div>
+    </div>
+
+    <div class="steps-navigation">
+        <h3>Шаги модуля:</h3>
+        <div class="steps-list" id="stepsList">
+            <p>Загрузка шагов...</p>
+        </div>
+    </div>
+
+    <div class="step-content">
+        <h2 id="stepTitle">Загрузка шага...</h2>
+        
+        <div class="step-body" id="stepBody">
+            <p>Загрузка содержимого шага...</p>
+        </div>
+
+        <div class="step-actions" id="stepActions">
+            <!-- Здесь будут кнопки для заданий или теории -->
+        </div>
+
+        <div class="navigation-buttons">
+            <button id="prevStep" disabled>Предыдущий шаг</button>
+            <button id="nextStep" disabled>Следующий шаг</button>
+        </div>
+    </div>
+
+    <script src="js/module.js"></script>
+</body>
+</html>
