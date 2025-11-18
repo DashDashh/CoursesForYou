@@ -28,27 +28,25 @@ async function loadAllCourses() {
       allCoursesDiv.innerHTML = courses
         .map(
           (course) => `
-                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                    <h3>${course.title || course.name}</h3>
-                    <p>${course.description || "Описание отсутствует"}</p>
-                    <p><strong>Автор:</strong> 
-                      <a href="view-profile.html?id=${
-                        course.id_teacher
-                      }" style="color: #007bff; text-decoration: none;">
-                        ${course.author || "Неизвестно"}
-                      </a>
-                    </p>
-                    <p><strong>Рейтинг:</strong> ${
-                      course.rating || "нет оценок"
-                    }</p>
-                    <p><strong>Студентов:</strong> ${
-                      course.students_count || 0
-                    }</p>
-                    <button onclick="enrollInCourse(${
-                      course.id
-                    })">Записаться на курс</button>
-                </div>
-            `
+            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                <h3>${course.title || course.name}</h3>
+                <p>${course.description || "Описание отсутствует"}</p>
+                <p><strong>Автор:</strong> 
+                  <a href="user-profile.html?id=${
+                    course.id_teacher
+                  }" style="color: #007bff; text-decoration: none;">
+                    ${course.author_display || course.author || "Неизвестно"}
+                  </a>
+                </p>
+                <p><strong>Рейтинг:</strong> ${
+                  course.rating || "нет оценок"
+                }</p>
+                <p><strong>Студентов:</strong> ${course.students_count || 0}</p>
+                <button onclick="enrollInCourse(${
+                  course.id
+                })">Записаться на курс</button>
+            </div>
+        `
         )
         .join("");
     } else {
@@ -91,24 +89,24 @@ async function searchCourses() {
       allCoursesDiv.innerHTML = courses
         .map(
           (course) => `
-                <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
-                    <h3>${course.title || course.name}</h3>
-                    <p>${course.description || "Описание отсутствует"}</p>
-                    <p><strong>Автор:</strong> 
-                      <a href="teacher-profile.html?id=${
-                        course.id_teacher
-                      }" style="color: #007bff; text-decoration: none;">
-                        ${course.author || "Неизвестно"}
-                      </a>
-                    </p>
-                    <p><strong>Рейтинг:</strong> ${
-                      course.rating || "нет оценок"
-                    }</p>
-                    <button onclick="enrollInCourse(${
-                      course.id
-                    })">Записаться на курс</button>
-                </div>
-            `
+            <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                <h3>${course.title || course.name}</h3>
+                <p>${course.description || "Описание отсутствует"}</p>
+                <p><strong>Автор:</strong> 
+                  <a href="user-profile.html?id=${
+                    course.id_teacher
+                  }" style="color: #007bff; text-decoration: none;">
+                    ${course.author_display || course.author || "Неизвестно"}
+                  </a>
+                </p>
+                <p><strong>Рейтинг:</strong> ${
+                  course.rating || "нет оценок"
+                }</p>
+                <button onclick="enrollInCourse(${
+                  course.id
+                })">Записаться на курс</button>
+            </div>
+        `
         )
         .join("");
     } else {

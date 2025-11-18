@@ -13,6 +13,7 @@ from routes.tasks import tasks_bp
 from routes.user_courses import user_courses_bp
 from routes.user_progresses import user_progresses_bp
 from routes.reviews import reviews_bp
+from routes.users import users_bp
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -35,6 +36,7 @@ def create_app(config_name='default'):
     app.register_blueprint(user_courses_bp, url_prefix='/api')
     app.register_blueprint(user_progresses_bp, url_prefix='/api/user_progress')
     app.register_blueprint(reviews_bp, url_prefix='/api')
+    app.register_blueprint(users_bp, url_prefix='/api')
     
     return app
 

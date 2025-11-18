@@ -8,6 +8,12 @@ function getAuthHeaders() {
   };
 }
 
+// Функция для форматирования логина (убирает @ в начале)
+function formatLogin(login) {
+  if (!login) return "Неизвестно";
+  return login.replace(/^@/, "");
+}
+
 // Функция для получения прогресса курса
 async function getCourseProgress(courseId) {
   try {
@@ -76,7 +82,16 @@ async function loadMyCourses() {
           <div>
             <h3>${course.title || course.name}</h3>
             <p>${course.description || "Описание отсутствует"}</p>
-            <p><strong>Автор:</strong> ${course.author || "Неизвестно"}</p>
+            <p>
+              <strong>Автор:</strong> 
+              <a href="user-profile.html?id=${
+                course.id_teacher || course.teacher_id
+              }" style="color: #007bff; text-decoration: none;">
+                ${formatLogin(
+                  course.author_display || course.author || "Неизвестно"
+                )}
+              </a>
+            </p>
             <p><strong>Прогресс:</strong> ${course.progress}%</p>
             <button onclick="openCourse(${course.id})">
               ${

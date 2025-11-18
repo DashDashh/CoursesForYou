@@ -92,11 +92,15 @@ async function loadCourseData() {
 
     document.getElementById("courseTitle").textContent =
       course.name || course.title;
-    document.getElementById("courseInstructor").textContent = `Преподаватель: ${
+    document.getElementById(
+      "courseInstructor"
+    ).innerHTML = `Преподаватель: <a href="user-profile.html?id=${
+      course.teacher?.id
+    }" style="color: #007bff; text-decoration: none;">${
       course.teacher?.login_display ||
       course.teacher?.login ||
       "Неизвестный преподаватель"
-    }`;
+    }</a>`;
     document.getElementById(
       "courseLevel"
     ).textContent = `Уровень: ${course.level}`;
@@ -230,21 +234,34 @@ async function loadComments() {
       return;
     }
 
+    // Загружаем информацию о пользователях для всех комментариев
+    const usersData = await loadUsersData(comments);
+
     comments.forEach((comment) => {
       const commentElement = document.createElement("div");
       commentElement.className = "comment-item";
 
+      // Находим данные пользователя
+      const userData = usersData[comment.user_id];
+      const username = userData
+        ? formatLogin(userData.login_display || userData.login)
+        : `Пользователь ${comment.user_id}`;
+
       commentElement.innerHTML = `
-                <div class="comment-header">
-                    <span class="comment-author">${
-                      comment.username || `Пользователь ${comment.user_id}`
-                    }</span>
-                    <span class="comment-date">${new Date(
-                      comment.date || comment.created_at
-                    ).toLocaleDateString()}</span>
-                </div>
-                <div class="comment-text">${comment.text}</div>
-            `;
+        <div class="comment-header">
+          <span class="comment-author">
+            <a href="user-profile.html?id=${
+              comment.user_id
+            }" style="color: #007bff; text-decoration: none;">
+              ${username}
+            </a>
+          </span>
+          <span class="comment-date">${new Date(
+            comment.date || comment.created_at
+          ).toLocaleDateString()}</span>
+        </div>
+        <div class="comment-text">${comment.text}</div>
+      `;
 
       commentsList.appendChild(commentElement);
     });
@@ -253,6 +270,41 @@ async function loadComments() {
     document.getElementById("commentsList").innerHTML =
       "<p>Ошибка загрузки отзывов</p>";
   }
+}
+
+// Функция для загрузки данных пользователей
+async function loadUsersData(comments) {
+  const usersData = {};
+  const uniqueUserIds = [
+    ...new Set(comments.map((comment) => comment.user_id)),
+  ];
+
+  try {
+    // Загружаем данные для каждого пользователя
+    await Promise.all(
+      uniqueUserIds.map(async (userId) => {
+        try {
+          const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`);
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            usersData[userId] = userData;
+          }
+        } catch (error) {
+          console.error(`Ошибка загрузки пользователя ${userId}:`, error);
+        }
+      })
+    );
+  } catch (error) {
+    console.error("Ошибка загрузки данных пользователей:", error);
+  }
+
+  return usersData;
+}
+
+// Функция для форматирования логина (убирает @ в начале)
+function formatLogin(login) {
+  if (!login) return "Неизвестно";
+  return login.replace("@", "");
 }
 
 function openModule(moduleId) {
