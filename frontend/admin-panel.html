@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель администратора - Courses for you</title>
+</head>
+<body>
+    <h1>Панель администратора</h1>
+    
+    <div>
+        <button onclick="logout()">Выйти</button>
+    </div>
+
+    <div style="display: flex; gap: 20px; margin: 20px 0;">
+        <button onclick="showSection('themes')">Управление темами</button>
+        <button onclick="showSection('users')">Управление пользователями</button>
+        <button onclick="window.location.href='profile.html'">Личный кабинет</button>
+    </div>
+
+    <!-- Секция управления темами -->
+    <div id="themes-section" style="display: none;">
+        <h2>Управление темами курсов</h2>
+        
+        <div>
+            <h3>Добавить новую тему</h3>
+            <input type="text" id="themeName" placeholder="Название темы">
+            <button onclick="addTheme()">Добавить тему</button>
+        </div>
+
+        <div>
+            <h3>Список тем</h3>
+            <div id="themesList">
+                <p>Загрузка тем...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция управления пользователями -->
+    <div id="users-section" style="display: none;">
+        <h2>Управление пользователями</h2>
+        
+        <div>
+            <input type="text" id="userSearch" placeholder="Поиск по логину" oninput="searchUsers()">
+        </div>
+
+        <div>
+            <h3>Список пользователей</h3>
+            <div id="usersList">
+                <p>Загрузка пользователей...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция управления курсами -->
+    <div id="courses-section" style="display: none;">
+        <h2>Управление курсами</h2>
+        
+        <div>
+            <button onclick="window.location.href='catalog.html'">Просмотр всех курсов</button>
+            <button onclick="window.location.href='my-courses.html'">Мои курсы</button>
+        </div>
+
+        <div>
+            <h3>Добавить новый курс</h3>
+            <button onclick="window.location.href='create-course.html'">Создать новый курс</button>
+        </div>
+
+        <div>
+            <h3>Статистика</h3>
+            <div id="stats">
+                <p>Загрузка статистики...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin-panel.js"></script>
+</body>
+</html>

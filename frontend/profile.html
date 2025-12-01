@@ -28,9 +28,57 @@
     </div>
 
     <div>
-        <a href="login.html">
-            <button>Выйти</button>
-        </a>
+        <button onclick="logout()">Выйти</button>
     </div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:5000/api";
+
+        function getAuthHeaders() {
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            return {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.id || ""}`,
+            };
+        }
+
+        // Функция для выхода
+        async function logout() {
+            try {
+                // Отправляем запрос на сервер для выхода
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                });
+
+                // Очищаем localStorage независимо от ответа сервера
+                localStorage.removeItem("user");
+                
+                // Перенаправляем на страницу входа
+                window.location.href = "login.html";
+                
+            } catch (error) {
+                console.error("Logout error:", error);
+                // Даже при ошибке очищаем localStorage и перенаправляем
+                localStorage.removeItem("user");
+                window.location.href = "login.html";
+            }
+        }
+
+        // Проверяем авторизацию при загрузке страницы
+        function checkAuth() {
+            const userData = localStorage.getItem("user");
+            if (!userData) {
+                window.location.href = "login.html";
+                return false;
+            }
+            return true;
+        }
+
+        // Проверяем авторизацию при загрузке страницы
+        document.addEventListener("DOMContentLoaded", function() {
+            checkAuth();
+        });
+    </script>
 </body>
 </html>
