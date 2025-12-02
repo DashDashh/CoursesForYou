@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from flask_cors import cross_origin
-from models import User
+from models import User, Course, Review, User_progress, User_Course
 from extensions import db
 
 auth_bp = Blueprint('auth', __name__)
@@ -52,7 +52,6 @@ def register():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Registration failed.'}), 500
-    
 
 @auth_bp.route('/login', methods=['POST'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
@@ -91,7 +90,6 @@ def login():
     except Exception as e:
         print(f"Ошибка входа: {e}")
         return jsonify({'error': 'Login failed.'}), 500
-    
 
 @auth_bp.route('/logout', methods=['POST'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
@@ -123,7 +121,6 @@ def check_auth():
             return jsonify({'authenticated': False}), 200
     except Exception as e:
         return jsonify({'error': 'Authentification check failed.'}), 500
-    
 
 @auth_bp.route('/change_password', methods=['POST'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
@@ -147,7 +144,7 @@ def change_password():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': 'Change password is failed'}), 500
-    
+
 @auth_bp.route('/update_profile', methods=['PUT'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_profile():
@@ -168,7 +165,6 @@ def update_profile():
         return jsonify({'message': 'Profile updated successfully'}), 200
     except Exception as e:
         return jsonify({'error': 'Profile update failed'}), 500
-    
 
 @auth_bp.route('/user_profile', methods=['GET'])
 @cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
@@ -186,3 +182,100 @@ def get_user_profile():
         }), 200
     except Exception as e:
         return jsonify({'error': 'Failed to get profile'}), 500
+
+# НОВЫЙ ENDPOINT - УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
+@auth_bp.route('/delete_account', methods=['DELETE'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+def delete_account():
+    """Удаление аккаунта пользователя (только для самого пользователя)"""
+    try:
+        user = get_user_from_auth()
+        if not user:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        # Проверяем пароль для подтверждения
+        data = request.get_json()
+        if not data or 'password' not in data:
+            return jsonify({'error': 'Password confirmation required'}), 400
+        
+        if not user.check_password(data['password']):
+            return jsonify({'error': 'Incorrect password'}), 401
+        
+        user_id = user.id
+        
+        # Удаляем связанные данные в правильном порядке
+        # 1. Удаляем прогресс пользователя
+        User_progress.query.filter_by(user_id=user_id).delete()
+        
+        # 2. Удаляем записи о курсах пользователя
+        User_Course.query.filter_by(user_id=user_id).delete()
+        
+        # 3. Удаляем отзывы пользователя
+        Review.query.filter_by(user_id=user_id).delete()
+        
+        # 4. Удаляем самого пользователя
+        db.session.delete(user)
+        
+        # 5. Очищаем сессию
+        session.clear()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Account deleted successfully',
+            'user_id': user_id
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при удалении аккаунта: {e}")
+        return jsonify({'error': 'Failed to delete account'}), 500
+
+# НОВЫЙ ENDPOINT - АДМИНИСТРАТОРСКОЕ УДАЛЕНИЕ
+@auth_bp.route('/admin/delete_user/<int:user_id>', methods=['DELETE'])
+@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+def admin_delete_user(user_id):
+    """Административное удаление пользователя (только для админов)"""
+    try:
+        # Проверяем права администратора
+        admin_user = get_user_from_auth()
+        if not admin_user:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        if admin_user.role.value != 'admin':
+            return jsonify({'error': 'Admin rights required'}), 403
+        
+        # Находим пользователя для удаления
+        user_to_delete = User.query.get(user_id)
+        if not user_to_delete:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Не позволяем удалить самого себя через этот endpoint
+        if user_to_delete.id == admin_user.id:
+            return jsonify({'error': 'Use delete_account endpoint to delete your own account'}), 400
+        
+        # Удаляем связанные данные в правильном порядке
+        # 1. Удаляем прогресс пользователя
+        User_progress.query.filter_by(user_id=user_id).delete()
+        
+        # 2. Удаляем записи о курсах пользователя
+        User_Course.query.filter_by(user_id=user_id).delete()
+        
+        # 3. Удаляем отзывы пользователя
+        Review.query.filter_by(user_id=user_id).delete()
+        
+        # 4. Удаляем самого пользователя
+        db.session.delete(user_to_delete)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'User {user_to_delete.login} deleted successfully by admin',
+            'deleted_user_id': user_id,
+            'deleted_user_login': user_to_delete.login
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Ошибка при административном удалении пользователя: {e}")
+        return jsonify({'error': 'Failed to delete user'}), 500

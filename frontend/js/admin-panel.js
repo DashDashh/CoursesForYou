@@ -55,17 +55,24 @@ function showSection(sectionId) {
 // Управление темами
 async function loadThemes() {
   try {
+    console.log("Loading themes from:", `${API_BASE_URL}/themes`);
+
     const response = await fetch(`${API_BASE_URL}/themes`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
 
+    console.log("Response status:", response.status);
+
     const themesList = document.getElementById("themesList");
 
     if (response.ok) {
-      const themes = await response.json();
+      const data = await response.json();
+      console.log("Themes data:", data);
 
-      if (themes.length === 0) {
+      const themes = data.themes;
+
+      if (!themes || themes.length === 0) {
         themesList.innerHTML = "<p>Темы пока не добавлены</p>";
         return;
       }
@@ -75,14 +82,16 @@ async function loadThemes() {
           (theme) => `
           <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0;">
             <strong>${theme.name}</strong>
-            <button onclick="deleteTheme(${theme.id})" style="float: right; background: red; color: white; border: none; padding: 5px 10px; margin-left: 10px;">
-              Удалить
-            </button>
+            <span style="float: right; color: #666; font-size: 14px;">
+              ID: ${theme.id}
+            </span>
           </div>
         `
         )
         .join("");
     } else {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
       themesList.innerHTML = "<p>Ошибка загрузки тем</p>";
     }
   } catch (error) {
@@ -119,28 +128,6 @@ async function addTheme() {
     }
   } catch (error) {
     console.error("Ошибка добавления темы:", error);
-    alert("Ошибка соединения с сервером");
-  }
-}
-
-async function deleteTheme(themeId) {
-  if (!confirm("Вы уверены, что хотите удалить эту тему?")) return;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/themes/${themeId}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-
-    if (response.ok) {
-      alert("Тема успешно удалена");
-      loadThemes();
-    } else {
-      const errorData = await response.json();
-      alert("Ошибка: " + (errorData.error || "Не удалось удалить тему"));
-    }
-  } catch (error) {
-    console.error("Ошибка удаления темы:", error);
     alert("Ошибка соединения с сервером");
   }
 }
