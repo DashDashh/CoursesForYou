@@ -93,3 +93,45 @@ class User(db.Model):
     def create_user(cls, login, password, **kwargs):
         user = cls(login=login, password=password, **kwargs)
         return user
+    
+    # Добавьте этот метод to_dict
+    def to_dict(self):
+        """Преобразует объект User в словарь для JSON сериализации"""
+        result = {
+            'id': self.id,
+            'login': self.login,
+            'login_display': self.login_display,
+            'avatar_path': self.avatar_path,
+            'about': self.about,
+            'is_banned': getattr(self, 'is_banned', False),  # Добавляем с проверкой
+        }
+        
+        # Обработка дат
+        if self.register_date:
+            result['register_date'] = self.register_date.isoformat()
+        else:
+            result['register_date'] = None
+            
+        if self.password_changed_date:
+            result['password_changed_date'] = self.password_changed_date.isoformat()
+        else:
+            result['password_changed_date'] = None
+        
+        # Обработка роли (преобразуем Enum в значение)
+        if hasattr(self.role, 'value'):
+            result['role'] = self.role.value  # Для Enum получаем числовое значение
+        else:
+            result['role'] = int(self.role) if self.role is not None else 2
+        
+        return result
+    
+    # Также добавьте метод для удобства
+    def to_dict_admin(self):
+        """Версия для админ-панели с дополнительными полями"""
+        user_dict = self.to_dict()
+        
+        # Добавляем дополнительные поля для админ-панели
+        user_dict['is_banned'] = getattr(self, 'is_banned', False)
+        user_dict['role_name'] = self.role.name if hasattr(self.role, 'name') else ('ADMIN' if self.role == 1 else 'USER')
+        
+        return user_dict

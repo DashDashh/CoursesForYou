@@ -135,15 +135,27 @@ async function addTheme() {
 // Управление пользователями
 async function loadUsers() {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/all`, {
+    console.log("=== DEBUG: loadUsers called ===");
+
+    const url = `${API_BASE_URL}/users/all`;
+    console.log("Fetching URL:", url);
+
+    const headers = getAuthHeaders();
+    console.log("Headers:", headers);
+
+    const response = await fetch(url, {
       method: "GET",
-      headers: getAuthHeaders(),
+      headers: headers,
     });
+
+    console.log("Response status:", response.status);
+    console.log("Response headers:", response.headers);
 
     const usersList = document.getElementById("usersList");
 
     if (response.ok) {
       const users = await response.json();
+      console.log("Users data received:", users);
 
       if (users.length === 0) {
         usersList.innerHTML = "<p>Пользователи не найдены</p>";
@@ -152,11 +164,17 @@ async function loadUsers() {
 
       displayUsers(users);
     } else {
-      usersList.innerHTML = "<p>Ошибка загрузки пользователей</p>";
+      console.error("Response not OK, status:", response.status);
+      const errorText = await response.text();
+      console.error("Error response text:", errorText);
+      usersList.innerHTML = `<p>Ошибка загрузки пользователей: ${response.status}</p>`;
     }
   } catch (error) {
-    console.error("Ошибка загрузки пользователей:", error);
-    document.getElementById("usersList").innerHTML = "<p>Ошибка соединения</p>";
+    console.error("Exception in loadUsers:", error);
+    console.error("Error stack:", error.stack);
+    document.getElementById(
+      "usersList"
+    ).innerHTML = `<p>Ошибка соединения: ${error.message}</p>`;
   }
 }
 
