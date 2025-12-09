@@ -5,7 +5,7 @@ from extensions import db
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     text = db.Column(db.Text, nullable=False)
     date = db.Column(DateTime)

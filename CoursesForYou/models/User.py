@@ -20,6 +20,7 @@ class User(db.Model):
     avatar_path = db.Column(db.String(255), default='') # добавить дефолт картинку
     about = db.Column(db.String(255))
     password_changed_date = db.Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    
 
     __table_args__ = (
         db.CheckConstraint("LENGTH(login) >= 3 AND LENGTH(login) <= 20", name='check_login_length'),

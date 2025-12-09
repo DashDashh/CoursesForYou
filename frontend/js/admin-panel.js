@@ -30,15 +30,12 @@ function logout() {
 }
 
 function showSection(sectionId) {
-  // Скрываем все секции
   document.getElementById("themes-section").style.display = "none";
   document.getElementById("users-section").style.display = "none";
   document.getElementById("courses-section").style.display = "none";
 
-  // Показываем выбранную секцию
   document.getElementById(sectionId + "-section").style.display = "block";
 
-  // Загружаем данные для секции
   switch (sectionId) {
     case "themes":
       loadThemes();
@@ -52,7 +49,6 @@ function showSection(sectionId) {
   }
 }
 
-// Управление темами
 async function loadThemes() {
   try {
     console.log("Loading themes from:", `${API_BASE_URL}/themes`);
@@ -132,7 +128,6 @@ async function addTheme() {
   }
 }
 
-// Управление пользователями
 async function loadUsers() {
   try {
     console.log("=== DEBUG: loadUsers called ===");
@@ -178,37 +173,6 @@ async function loadUsers() {
   }
 }
 
-async function searchUsers() {
-  const searchTerm = document.getElementById("userSearch").value.trim();
-
-  if (!searchTerm) {
-    loadUsers();
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/users/search?login=${encodeURIComponent(searchTerm)}`,
-      {
-        method: "GET",
-        headers: getAuthHeaders(),
-      }
-    );
-
-    const usersList = document.getElementById("usersList");
-
-    if (response.ok) {
-      const users = await response.json();
-      displayUsers(users);
-    } else {
-      usersList.innerHTML = "<p>Ошибка поиска</p>";
-    }
-  } catch (error) {
-    console.error("Ошибка поиска:", error);
-    document.getElementById("usersList").innerHTML = "<p>Ошибка соединения</p>";
-  }
-}
-
 function displayUsers(users) {
   const usersList = document.getElementById("usersList");
 
@@ -217,25 +181,27 @@ function displayUsers(users) {
       (user) => `
       <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0;">
         <div>
-          <strong>Логин:</strong> ${user.login}
+          <strong>Логин:</strong> 
+          <a href="user-profile.html?id=${
+            user.id
+          }" style="color: #0066cc; text-decoration: none; font-weight: normal;">
+            ${user.login}
+          </a>
           <span style="float: right; color: ${
-            user.role === "admin" ? "red" : "blue"
+            user.role === 1 ? "red" : "blue"
           }">
-            ${user.role === "admin" ? "Админ" : "Пользователь"}
+            ${user.role === 1 ? "Админ" : "Пользователь"}
           </span>
         </div>
         <div>
           <strong>ID:</strong> ${user.id}
-          <strong style="margin-left: 20px;">Дата регистрации:</strong> ${new Date(
+          <strong style="margin-left: 20px;">Дата регистрации:</strong> ${
             user.register_date
-          ).toLocaleDateString()}
+              ? new Date(user.register_date).toLocaleDateString()
+              : "Нет данных"
+          }
         </div>
         <div style="margin-top: 10px;">
-          <button onclick="banUser(${
-            user.id
-          })" style="background: orange; color: white; border: none; padding: 5px 10px; margin-right: 5px;">
-            ${user.is_banned ? "Разблокировать" : "Заблокировать"}
-          </button>
           <button onclick="deleteUser(${
             user.id
           })" style="background: red; color: white; border: none; padding: 5px 10px;">
@@ -246,31 +212,6 @@ function displayUsers(users) {
     `
     )
     .join("");
-}
-
-async function banUser(userId) {
-  if (!confirm("Заблокировать/разблокировать пользователя?")) return;
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/admin/users/${userId}/toggle-ban`,
-      {
-        method: "POST",
-        headers: getAuthHeaders(),
-      }
-    );
-
-    if (response.ok) {
-      alert("Статус пользователя изменен");
-      loadUsers();
-    } else {
-      const errorData = await response.json();
-      alert("Ошибка: " + (errorData.error || "Не удалось изменить статус"));
-    }
-  } catch (error) {
-    console.error("Ошибка изменения статуса:", error);
-    alert("Ошибка соединения с сервером");
-  }
 }
 
 async function deleteUser(userId) {
@@ -333,10 +274,8 @@ async function loadStats() {
   }
 }
 
-// Инициализация
 document.addEventListener("DOMContentLoaded", () => {
   if (!checkAdminAuth()) return;
 
-  // Показываем первую секцию по умолчанию
   showSection("themes");
 });
