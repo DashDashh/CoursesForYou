@@ -11,7 +11,7 @@ class stepType(Enum):
 
 class Step(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('module.id'), nullable=False)
+    module_id = db.Column(db.Integer, db.ForeignKey('module.id', ondelete='SET NULL'), nullable=False)
     number = db.Column(db.Integer, nullable=False, info={'check': 'number > 0'})
     step_type = db.Column(SQLEnum(stepType), nullable=False)
 

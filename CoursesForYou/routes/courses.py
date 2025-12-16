@@ -7,7 +7,8 @@ from models.Course import CourseLevel
 courses_bp = Blueprint('courses', __name__)
 
 @courses_bp.route('/courses', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def create_course():
     try:
         data = request.get_json()
@@ -77,7 +78,8 @@ def create_course():
         return jsonify({'error': 'Course creation failed'}), 500
 
 @courses_bp.route('/courses', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_courses():
     try:
         print("=== НАЧАЛО get_courses ===")
@@ -125,7 +127,8 @@ def get_courses():
 
 
 @courses_bp.route('/courses/search', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def search_courses():
     try:
         search_term = request.args.get('q', '')
@@ -160,7 +163,8 @@ def search_courses():
 
 
 @courses_bp.route('/course/<int:course_id>', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_course(course_id):
     try:
         course = Course.query.get_or_404(course_id)
@@ -192,7 +196,8 @@ def get_course(course_id):
     
 
 @courses_bp.route('/course/<int:course_id>', methods=['PUT'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_course(course_id):
     try:
         data = request.get_json()
@@ -222,3 +227,94 @@ def update_course(course_id):
         db.session.rollback()
         print(f"Ошибка обновления курса: {e}")
         return jsonify({'error': f'Course update failed: {str(e)}'}), 500
+    
+# Добавьте эту функцию в конец файла courses.py
+
+@courses_bp.route('/admin/courses/<int:course_id>', methods=['DELETE'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+def delete_course(course_id):
+    try:
+        print(f"=== НАЧАЛО УДАЛЕНИЯ КУРСА {course_id} ===")
+        
+        # Находим курс
+        course = Course.query.get_or_404(course_id)
+        print(f"Найден курс: '{course.name}' (ID: {course_id})")
+        
+        # Импортируем все необходимые модели
+        from models.Module import Module
+        from models.Step import Step
+        from models.Theory import Theory
+        from models.Task import Task
+        from models.Review import Review
+        from models.User_Course import User_Course
+        from models.User_progress import User_progress
+        
+        # === 1. Удаляем модули курса и всё содержимое ===
+        print("\n1. Удаление модулей курса...")
+        modules = Module.query.filter_by(course_id=course_id).all()
+        print(f"   Найдено модулей: {len(modules)}")
+        
+        for module in modules:
+            print(f"   Удаляю модуль '{module.name}' (ID: {module.id})...")
+            
+            # Удаляем шаги модуля
+            steps = Step.query.filter_by(module_id=module.id).all()
+            for step in steps:
+                print(f"     Удаляю шаг '{step.title}' (ID: {step.id})...")
+                
+                # Удаляем теорию в шагах
+                Theory.query.filter_by(step_id=step.id).delete()
+                
+                # Удаляем задачи в шагах
+                Task.query.filter_by(step_id=step.id).delete()
+                
+                # Удаляем шаг
+                db.session.delete(step)
+            
+            # Удаляем модуль
+            db.session.delete(module)
+        
+        # === 2. Удаляем отзывы курса ===
+        print("\n2. Удаление отзывов курса...")
+        reviews_deleted = Review.query.filter_by(course_id=course_id).delete()
+        print(f"   Удалено отзывов: {reviews_deleted}")
+        
+        # === 3. Удаляем подписки на курс ===
+        print("\n3. Удаление подписок на курс...")
+        subscriptions_deleted = User_Course.query.filter_by(course_id=course_id).delete()
+        print(f"   Удалено подписок: {subscriptions_deleted}")
+        
+        # === 4. Удаляем прогресс по курсу ===
+        print("\n4. Удаление прогресса по курсу...")
+        progresses_deleted = User_progress.query.filter_by(course_id=course_id).delete()
+        print(f"   Удалено записей прогресса: {progresses_deleted}")
+        
+        # === 5. Удаляем сам курс ===
+        print("\n5. Удаление курса...")
+        db.session.delete(course)
+        
+        # === 6. Сохраняем изменения ===
+        db.session.commit()
+        
+        print(f"\n✅ КУРС '{course.name}' УДАЛЁН")
+        print("="*50)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Курс "{course.name}" удалён',
+            'stats': {
+                'modules_deleted': len(modules),
+                'reviews_deleted': reviews_deleted,
+                'subscriptions_deleted': subscriptions_deleted,
+                'progresses_deleted': progresses_deleted
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"\nОШИБКА УДАЛЕНИЯ КУРСА: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
+        return jsonify({'error': f'Failed to delete course: {str(e)}'}), 500

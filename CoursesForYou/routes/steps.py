@@ -7,7 +7,8 @@ from models.Step import stepType
 steps_bp = Blueprint('steps', __name__)
 
 @steps_bp.route('/modules/<int:module_id>/steps', methods=['OPTIONS'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['GET', 'POST', 'OPTIONS'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -15,7 +16,8 @@ def handle_steps_options(module_id):
     return jsonify({}), 200
 
 @steps_bp.route('/modules/<int:module_id>/steps', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['GET'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -47,7 +49,8 @@ def get_steps(module_id):
         return jsonify({'error': 'Failed to fetch steps for module'}), 500
     
 @steps_bp.route('/modules/<int:module_id>/steps', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['POST'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -162,7 +165,8 @@ def create_step(module_id):
         return jsonify({'error': 'Failed to create step'}), 500
 
 @steps_bp.route('/steps/<int:step_id>', methods=['OPTIONS'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['GET', 'PUT', 'DELETE', 'OPTIONS'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -170,7 +174,8 @@ def handle_step_options(step_id):
     return jsonify({}), 200
     
 @steps_bp.route('/steps/<int:step_id>', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['GET'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -191,7 +196,8 @@ def get_step(step_id):
         return jsonify({'error': 'Failed to fetch step'}), 500
     
 @steps_bp.route('/steps/<int:step_id>', methods=['PUT'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['PUT'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -232,7 +238,8 @@ def update_step(step_id):
         return jsonify({'error': 'Failed to update step'}), 500
     
 @steps_bp.route('/steps/<int:step_id>', methods=['DELETE'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['DELETE'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -270,7 +277,8 @@ def delete_step(step_id):
     
 
 @steps_bp.route('/theory/<int:step_id>', methods=['PUT'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['PUT'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -299,7 +307,8 @@ def update_theory(step_id):
         return jsonify({'error': 'Failed to update theory'}), 500
 
 @steps_bp.route('/task/<int:step_id>', methods=['PUT'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['PUT'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -330,7 +339,8 @@ def update_task(step_id):
         return jsonify({'error': 'Failed to update task'}), 500
 
 @steps_bp.route('/theory/<int:step_id>', methods=['OPTIONS'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['PUT', 'OPTIONS'],
               allow_headers=['Content-Type', 'Authorization'])
@@ -338,7 +348,8 @@ def handle_theory_options(step_id):
     return jsonify({}), 200
 
 @steps_bp.route('/task/<int:step_id>', methods=['OPTIONS'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], 
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], 
               supports_credentials=True,
               methods=['PUT', 'OPTIONS'],
               allow_headers=['Content-Type', 'Authorization'])

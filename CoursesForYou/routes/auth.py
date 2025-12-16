@@ -17,7 +17,8 @@ def get_user_from_auth():
         return None
 
 @auth_bp.route('/register', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def register():
     try:
         data = request.get_json()
@@ -54,7 +55,8 @@ def register():
         return jsonify({'error': 'Registration failed.'}), 500
 
 @auth_bp.route('/login', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500", 
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def login():
     try:
         data = request.get_json()
@@ -92,7 +94,8 @@ def login():
         return jsonify({'error': 'Login failed.'}), 500
 
 @auth_bp.route('/logout', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def logout():
     try:
         session.clear()
@@ -101,7 +104,8 @@ def logout():
         return jsonify({'error': 'Logout failed.'}), 500
 
 @auth_bp.route('/check_auth', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def check_auth():
     try:
         user = get_user_from_auth()
@@ -123,7 +127,8 @@ def check_auth():
         return jsonify({'error': 'Authentification check failed.'}), 500
 
 @auth_bp.route('/change_password', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def change_password():
     try:
         user = get_user_from_auth()
@@ -146,7 +151,8 @@ def change_password():
         return jsonify({'error': 'Change password is failed'}), 500
 
 @auth_bp.route('/update_profile', methods=['PUT'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def update_profile():
     try:
         user = get_user_from_auth()
@@ -167,7 +173,8 @@ def update_profile():
         return jsonify({'error': 'Profile update failed'}), 500
 
 @auth_bp.route('/user_profile', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_user_profile():
     try:
         user = get_user_from_auth()
@@ -185,7 +192,8 @@ def get_user_profile():
 
 # НОВЫЙ ENDPOINT - УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
 @auth_bp.route('/delete_account', methods=['DELETE'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def delete_account():
     """Удаление аккаунта пользователя (только для самого пользователя)"""
     try:
@@ -233,7 +241,8 @@ def delete_account():
 
 # НОВЫЙ ENDPOINT - АДМИНИСТРАТОРСКОЕ УДАЛЕНИЕ
 @auth_bp.route('/admin/delete_user/<int:user_id>', methods=['DELETE'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def admin_delete_user(user_id):
     """Административное удаление пользователя (только для админов)"""
     try:

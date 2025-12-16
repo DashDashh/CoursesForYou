@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import User, Course, Review, Theme, User_progress, User_Course
 from extensions import db
+from flask_cors import cross_origin
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -12,6 +13,8 @@ def check_admin():
 
 # Темы
 @admin_bp.route('/themes', methods=['GET'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_themes():
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403
@@ -22,6 +25,8 @@ def get_themes():
         return jsonify({'error': str(e)}), 500
 
 @admin_bp.route('/themes', methods=['POST'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def create_theme():
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403
@@ -42,6 +47,8 @@ def create_theme():
         return jsonify({'error': str(e)}), 500
 
 @admin_bp.route('/themes/<int:theme_id>', methods=['DELETE'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def delete_theme(theme_id):
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403
@@ -56,6 +63,8 @@ def delete_theme(theme_id):
 
 # Пользователи
 @admin_bp.route('/users/all', methods=['GET'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_all_users():
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403
@@ -72,6 +81,8 @@ def get_all_users():
         return jsonify({'error': str(e)}), 500
 
 @admin_bp.route('/admin/users/<int:user_id>/toggle-ban', methods=['POST'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def toggle_user_ban(user_id):
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403
@@ -86,6 +97,8 @@ def toggle_user_ban(user_id):
         return jsonify({'error': str(e)}), 500
 
 @admin_bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def admin_delete_user(user_id):
     if not check_admin():
         return jsonify({'error': 'Access denied'}), 403

@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api/auth";
+const API_BASE_URL = "https://localhost:5000/api/auth";
 
 function showMessage(message, isError = false) {
   let messageDiv = document.getElementById("message");

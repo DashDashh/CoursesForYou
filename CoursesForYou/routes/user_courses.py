@@ -8,7 +8,8 @@ user_courses_bp = Blueprint('user_courses', __name__)
 
 
 @user_courses_bp.route('/user/<int:user_id>/courses', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_user_courses(user_id):
     try:
         user = User.query.get_or_404(user_id)
@@ -31,7 +32,8 @@ def get_user_courses(user_id):
 
 
 @user_courses_bp.route('/my_courses', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_my_courses():
     try:
         user = get_user_from_auth()
@@ -60,7 +62,8 @@ def get_my_courses():
         return jsonify({'error': 'Failed to get my courses'}), 500
 
 @user_courses_bp.route('/course/<int:course_id>/users', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_course_users(course_id):
     try:
         course = Course.query.get_or_404(course_id)
@@ -80,7 +83,8 @@ def get_course_users(course_id):
 
 
 @user_courses_bp.route('/enroll', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def enroll_in_course():
     try:
         print("=== ЗАПРОС НА ЗАПИСЬ НА КУРС ===")
@@ -136,7 +140,8 @@ def enroll_in_course():
         return jsonify({'error': 'Failed to enroll in course'}), 500
 
 @user_courses_bp.route('/user/<int:user_id>/course/<int:course_id>', methods=['POST'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def create_user_course(user_id, course_id):
     try:
         user = User.query.get_or_404(user_id)
@@ -176,7 +181,8 @@ def create_user_course(user_id, course_id):
 
 
 @user_courses_bp.route('/user/<int:user_id>/course/<int:course_id>', methods=['DELETE'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def delete_user_course(user_id, course_id):
     try:
         User.query.get_or_404(user_id)

@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "https://localhost:5000/api";
 
 // Получаем параметры из URL
 const urlParams = new URLSearchParams(window.location.search);

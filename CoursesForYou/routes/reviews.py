@@ -9,7 +9,8 @@ reviews_bp = Blueprint('reviews', __name__)
 
 # Добавьте этот маршрут для создания отзывов
 @reviews_bp.route('/reviews', methods=['POST', 'OPTIONS'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def create_review():
     try:
         # Обработка preflight запроса
@@ -57,7 +58,8 @@ def create_review():
 
 # Остальные маршруты остаются без изменений
 @reviews_bp.route('/reviews/course/<int:course_id>', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_course_reviews(course_id):
     try:
         page = request.args.get('page', 1, type=int)
@@ -76,7 +78,8 @@ def get_course_reviews(course_id):
         return jsonify({'error': 'Failed to fetch reviews'}), 500
     
 @reviews_bp.route('/reviews/<int:review_id>', methods=['GET'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def get_review(review_id):
     try:
         review = Review.query.get_or_404(review_id)
@@ -85,7 +88,8 @@ def get_review(review_id):
         return jsonify({'error': 'Failed to fetch review'}), 500
     
 @reviews_bp.route('/reviews/<int:review_id>', methods=['DELETE'])
-@cross_origin(origins=["http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
+@cross_origin(origins=["https://localhost:5500", "https://127.0.0.1:5500",
+                       "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
 def delete_review(review_id):
     try:
         review = Review.query.get_or_404(review_id)

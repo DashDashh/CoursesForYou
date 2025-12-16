@@ -2,6 +2,8 @@ from flask import Flask
 from extensions import db
 from config import config
 from flask_cors import CORS
+import os
+import ssl
 
 from routes.auth import auth_bp
 from routes.courses import courses_bp
@@ -22,10 +24,10 @@ def create_app(config_name='default'):
     db.init_app(app)
 
     CORS(app, 
-         origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+         origins=["https://localhost:5500", "https://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:5500"],
          supports_credentials=True,
          methods=["GET", "POST", "PUT", "DELETE"],
-         allow_headers=["Content-Type"])
+         allow_headers=["Content-Type", "Authorization"])
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(courses_bp, url_prefix='/api')
@@ -60,4 +62,30 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         print("Все таблицы созданы!")
-    app.run(debug=True)
+    
+    cert_path = os.path.join('ssl', 'cert.pem')
+    key_path = os.path.join('ssl', 'key.pem')
+
+    if os.path.exists(cert_path) and os.path.exists(key_path):
+        print("Сертификаты найдены, запускаем HTTPS сервер...")
+        print(f"Сертификат: {cert_path}")
+        print(f"Ключ: {key_path}")
+        
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(cert_path, key_path)
+        
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=True,
+            ssl_context=ssl_context  # HTTPS!
+        )
+    else:
+        print("Сертификаты не найдены!")
+        print("Запуск HTTP сервера...")
+        app.run(
+            host='0.0.0.0',
+            port=5000,
+            debug=True
+        )
+    
