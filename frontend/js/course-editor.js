@@ -258,7 +258,7 @@ async function createCourse(courseData) {
       console.log("Курс создан:", result);
       alert("Курс успешно создан!");
 
-      window.location.href = `course-editor.html?id=${result.id}`;
+      //window.location.href = `course-editor.html?id=${result.id}`;
       return result;
     } else {
       const errorData = await response.json();

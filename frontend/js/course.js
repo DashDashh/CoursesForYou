@@ -26,6 +26,56 @@ function checkAuth() {
   return true;
 }
 
+async function submitComment() {
+  if (!checkAuth()) {
+    return;
+  }
+
+  const commentText = document.getElementById("commentText").value.trim();
+
+  if (!commentText) {
+    alert("Пожалуйста, введите текст отзыва");
+    return;
+  }
+
+  try {
+    const currentUser = getCurrentUser();
+    console.log("Current user:", currentUser);
+
+    if (!currentUser || !currentUser.id) {
+      alert("Ошибка: пользователь не найден. Пожалуйста, войдите заново.");
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/reviews`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: currentUser.id,
+        course_id: parseInt(courseId),
+        text: commentText,
+      }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      document.getElementById("commentText").value = "";
+      loadComments();
+      alert("Отзыв успешно добавлен!");
+    } else {
+      const errorData = await response.json();
+      alert(`Ошибка при отправке отзыва: ${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Ошибка отправки комментария:", error);
+    alert("Ошибка при отправке отзыва");
+  }
+}
+
 // Загрузка прогресса курса
 async function loadCourseProgress() {
   try {

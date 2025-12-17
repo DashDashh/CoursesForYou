@@ -297,7 +297,7 @@ def delete_course(course_id):
         # === 6. Сохраняем изменения ===
         db.session.commit()
         
-        print(f"\n✅ КУРС '{course.name}' УДАЛЁН")
+        print(f"\nКУРС '{course.name}' УДАЛЁН")
         print("="*50)
         
         return jsonify({
